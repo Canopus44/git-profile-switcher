@@ -133,7 +133,7 @@
             </ListBox.ItemTemplate>
           </ListBox>
 
-          <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="8">
+          <Grid Grid.Row="2" RowDefinitions="Auto,Auto" ColumnDefinitions="*,*" ColumnSpacing="8">
             <Button Content="Nuevo"
                     Classes="pressable"
                     AutomationProperties.Name="Nuevo perfil"
@@ -147,6 +147,14 @@
                     HorizontalAlignment="Stretch"
                     IsEnabled="False"
                     Click="OnDelete" />
+            <Button Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    Content="Importar del sistema"
+                    Classes="ghost pressable"
+                    AutomationProperties.Name="Importar perfiles del sistema"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,8,0,0"
+                    Click="OnImportFromSystem" />
           </Grid>
         </Grid>
       </Border>
@@ -180,9 +188,10 @@
               <TextBlock x:Name="NameError" Classes="error" IsVisible="False" />
 
               <TextBlock Classes="fieldLabel" Text="Cuenta gh (opcional)" />
-              <TextBox x:Name="GhBox"
-                       Watermark="opcional, ej. mi-usuario-gh"
-                       AutomationProperties.Name="Cuenta de GitHub CLI" />
+              <ComboBox x:Name="GhBox"
+                        IsEditable="True"
+                        PlaceholderText="opcional, ej. mi-usuario-gh"
+                        AutomationProperties.Name="Cuenta de GitHub CLI" />
 
               <TextBlock Classes="caption" Margin="0,24,0,0" Text="GIT" />
 

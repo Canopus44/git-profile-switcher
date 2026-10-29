@@ -19,6 +19,7 @@ public partial class MainWindow : Window
     readonly ObservableCollection<ProfileRow> _rows = [];
     readonly GitConfigService _git = new(new ProcessRunner());
     readonly ProfileApplier _applier;
+    readonly SystemProfileScanner _scanner = new();
     readonly TranslateTransform _detailShift = new();
 
     string? _activeProfileId;
@@ -60,8 +61,20 @@ public partial class MainWindow : Window
             _activeProfileId = result.Data.ActiveProfileId;
             UpdateEmptyState();
 
+            var scan = await Task.Run(() => _scanner.Scan(HomeDirectory()));
+            PopulateGhAccounts(scan.GhAccounts);
+
+            var status = new List<(string Message, StepStatus Status)>();
             if (result.Error is not null)
-                ShowLines([(result.Error, StepStatus.Error)]);
+                status.Add((result.Error, StepStatus.Error));
+
+            if (_rows.Count == 0)
+            {
+                var imported = await ImportDiscoveredAsync(scan);
+                if (imported > 0)
+                    status.Add(($"{imported} perfiles detectados en tu sistema", StepStatus.Ok));
+                status.AddRange(scan.Notes.Select(note => (note, StepStatus.Warning)));
+            }
 
             var selected = _rows.FirstOrDefault(row => row.Profile.Id == _activeProfileId) ?? _rows.FirstOrDefault();
             if (selected is not null)
@@ -71,6 +84,9 @@ public partial class MainWindow : Window
             }
 
             await RefreshHeaderAsync();
+
+            if (status.Count > 0)
+                ShowLines(status);
         }
         catch (Exception ex)
         {
@@ -130,6 +146,37 @@ public partial class MainWindow : Window
         await SaveStoreAsync();
         await RefreshHeaderAsync();
         ShowLines([($"Perfil '{row.Profile.Name}' eliminado.", StepStatus.Ok)]);
+    }
+
+    async void OnImportFromSystem(object? sender, RoutedEventArgs e)
+    {
+        if (_busy)
+            return;
+
+        SetBusy(true);
+        try
+        {
+            var scan = await Task.Run(() => _scanner.Scan(HomeDirectory()));
+            PopulateGhAccounts(scan.GhAccounts);
+
+            var imported = await ImportDiscoveredAsync(scan);
+            var lines = new List<(string Message, StepStatus Status)>
+            {
+                imported > 0
+                    ? ($"{imported} importados", StepStatus.Ok)
+                    : ("No se encontraron perfiles nuevos", StepStatus.Warning)
+            };
+            lines.AddRange(scan.Notes.Select(note => (note, StepStatus.Warning)));
+            ShowLines(lines);
+        }
+        catch (Exception ex)
+        {
+            ShowLines([($"Error al importar: {ex.Message}", StepStatus.Error)]);
+        }
+        finally
+        {
+            SetBusy(false);
+        }
     }
 
     async void OnSave(object? sender, RoutedEventArgs e)
@@ -253,6 +300,34 @@ public partial class MainWindow : Window
             return false;
         }
     }
+
+    async Task<int> ImportDiscoveredAsync(ScanResult scan)
+    {
+        var existing = _rows.Select(row => row.Profile).ToList();
+        var merged = ProfileImport.Merge(existing, scan.Profiles);
+        var imported = merged.Skip(existing.Count).ToList();
+        if (imported.Count == 0)
+            return 0;
+
+        foreach (var profile in imported)
+            _rows.Add(new ProfileRow(profile));
+
+        RefreshRowStates();
+        UpdateEmptyState();
+        await SaveStoreAsync();
+
+        var first = _rows.First(row => row.Profile.Id == imported[0].Id);
+        _editing = first.Profile;
+        _creatingNew = false;
+        SetSelection(first);
+        LoadIntoForm(first.Profile);
+        AnimateDetail();
+        return imported.Count;
+    }
+
+    void PopulateGhAccounts(IReadOnlyList<string> accounts) => GhBox.ItemsSource = accounts.ToList();
+
+    static string HomeDirectory() => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
     async Task RefreshHeaderAsync()
     {

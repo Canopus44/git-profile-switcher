@@ -9,9 +9,21 @@ App de escritorio (Avalonia / .NET 10) para guardar perfiles de git y cambiar en
 ## Funciones
 
 - Crear, editar y eliminar perfiles con nombre, `git user.name`, `git user.email`, ruta de llave SSH y cuenta de `gh` (ambos opcionales).
+- Importar automáticamente los perfiles que ya tienes configurados en git y SSH.
 - Aplicar un perfil: actualiza la config global de git, el bloque gestionado de `~/.ssh/config` y cambia la cuenta activa de `gh`.
 - Muestra el perfil activo y avisa si `git config --global user.email` no coincide con el perfil.
 - Reporte paso a paso de cada aplicación (✓ / ⚠ / ✕).
+
+## Detección automática
+
+La primera vez que abres la app (sin perfiles guardados) lee tu configuración existente y la importa. También puedes pulsar **Importar del sistema** cuando quieras; solo agrega perfiles cuyo email no esté ya en la lista.
+
+- `~/.gitconfig` y sus bloques `includeIf "gitdir:..."`: toma `user.name` / `user.email` de cada configuración incluida y nombra el perfil según el archivo (`.gitconfig-work` → Work).
+- `~/.ssh/id_*` (sin `.pub`): asocia la llave al perfil cuando el sufijo coincide (`id_ed25519_work` → Work).
+- `hosts.yml` de GitHub CLI: ofrece las cuentas `gh` existentes en el desplegable del perfil.
+
+Todo es solo lectura: nada se modifica hasta que pulses **Aplicar perfil**. Nunca se leen ni se guardan tokens; de `hosts.yml` solo se toman los nombres de usuario.
+
 
 ## Requisitos
 
