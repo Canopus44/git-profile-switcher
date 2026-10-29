@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>GitProfileSwitcher</AssemblyName>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0</AssemblyVersion>
+    <FileVersion>1.1.0</FileVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>..\..\assets\icon.ico</ApplicationIcon>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.22" Condition="'$(Configuration)' == 'Debug'" />
+    <PackageReference Include="Velopack" Version="1.2.161" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GitProfileSwitcher.Core\GitProfileSwitcher.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="..\..\assets\icon.ico" Link="Assets\icon.ico" />
+  </ItemGroup>
+
+</Project>

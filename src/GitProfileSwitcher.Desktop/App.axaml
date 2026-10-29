@@ -1,0 +1,206 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="GitProfileSwitcher.Desktop.App"
+             RequestedThemeVariant="Default">
+
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.ThemeDictionaries>
+
+        <ResourceDictionary x:Key="Dark">
+          <SolidColorBrush x:Key="Bg" Color="#0B0B0F" />
+          <SolidColorBrush x:Key="BgTranslucent" Color="#D90B0B0F" />
+          <SolidColorBrush x:Key="Surface" Color="#0FFFFFFF" />
+          <SolidColorBrush x:Key="SurfaceHover" Color="#1FFFFFFF" />
+          <SolidColorBrush x:Key="FieldBg" Color="#0AFFFFFF" />
+          <SolidColorBrush x:Key="ControlBorder" Color="#24FFFFFF" />
+          <SolidColorBrush x:Key="Separator" Color="#1AFFFFFF" />
+          <SolidColorBrush x:Key="Text" Color="#F5F5F7" />
+          <SolidColorBrush x:Key="TextSecondary" Color="#99EBEBF5" />
+          <SolidColorBrush x:Key="Accent" Color="#0A84FF" />
+          <SolidColorBrush x:Key="AccentHover" Color="#3395FF" />
+          <SolidColorBrush x:Key="AccentTint" Color="#260A84FF" />
+          <SolidColorBrush x:Key="Success" Color="#30D158" />
+          <SolidColorBrush x:Key="SuccessText" Color="#30D158" />
+          <SolidColorBrush x:Key="SuccessTint" Color="#2930D158" />
+          <SolidColorBrush x:Key="Warning" Color="#FF9F0A" />
+          <SolidColorBrush x:Key="WarningText" Color="#FF9F0A" />
+          <SolidColorBrush x:Key="WarningTint" Color="#26FF9F0A" />
+          <SolidColorBrush x:Key="Danger" Color="#FF453A" />
+          <SolidColorBrush x:Key="DangerText" Color="#FF6961" />
+        </ResourceDictionary>
+
+        <ResourceDictionary x:Key="Light">
+          <SolidColorBrush x:Key="Bg" Color="#F5F5F7" />
+          <SolidColorBrush x:Key="BgTranslucent" Color="#D9F5F5F7" />
+          <SolidColorBrush x:Key="Surface" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="SurfaceHover" Color="#08000000" />
+          <SolidColorBrush x:Key="FieldBg" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="ControlBorder" Color="#1F000000" />
+          <SolidColorBrush x:Key="Separator" Color="#14000000" />
+          <SolidColorBrush x:Key="Text" Color="#1D1D1F" />
+          <SolidColorBrush x:Key="TextSecondary" Color="#993C3C43" />
+          <SolidColorBrush x:Key="Accent" Color="#0A84FF" />
+          <SolidColorBrush x:Key="AccentHover" Color="#0077ED" />
+          <SolidColorBrush x:Key="AccentTint" Color="#1A0A84FF" />
+          <SolidColorBrush x:Key="Success" Color="#30D158" />
+          <SolidColorBrush x:Key="SuccessText" Color="#127A34" />
+          <SolidColorBrush x:Key="SuccessTint" Color="#2630D158" />
+          <SolidColorBrush x:Key="Warning" Color="#FF9F0A" />
+          <SolidColorBrush x:Key="WarningText" Color="#A35200" />
+          <SolidColorBrush x:Key="WarningTint" Color="#29FF9F0A" />
+          <SolidColorBrush x:Key="Danger" Color="#FF453A" />
+          <SolidColorBrush x:Key="DangerText" Color="#C4271C" />
+        </ResourceDictionary>
+
+      </ResourceDictionary.ThemeDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme />
+
+    <!-- Typography: hierarchy from size + weight, system font first. -->
+    <Style Selector="TextBlock">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="Foreground" Value="{DynamicResource Text}" />
+    </Style>
+    <Style Selector="TextBlock.caption">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="LetterSpacing" Value="0.6" />
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+    </Style>
+    <Style Selector="TextBlock.secondary">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+    </Style>
+    <Style Selector="TextBlock.fieldLabel">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+      <Setter Property="Margin" Value="0,12,0,6" />
+    </Style>
+    <Style Selector="TextBlock.error">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Foreground" Value="{DynamicResource DangerText}" />
+      <Setter Property="Margin" Value="0,4,0,0" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <!-- Controls: 8pt radius, single hairline, no heavy chrome. -->
+    <Style Selector="TextBox">
+      <Setter Property="Height" Value="34" />
+      <Setter Property="MinHeight" Value="34" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="10,0" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="Background" Value="{DynamicResource FieldBg}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ControlBorder}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Foreground" Value="{DynamicResource Text}" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+      <Setter Property="BorderBrush" Value="{DynamicResource TextSecondary}" />
+    </Style>
+    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+      <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector="Button">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource Text}" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Height" Value="34" />
+      <Setter Property="Padding" Value="14,0" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button /template/ ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SurfaceHover}" />
+    </Style>
+    <Style Selector="Button:pressed /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource SurfaceHover}" />
+    </Style>
+    <Style Selector="Button:disabled">
+      <Setter Property="Opacity" Value="0.4" />
+    </Style>
+    <Style Selector="Button:disabled /template/ ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.primary:disabled /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource Accent}" />
+    </Style>
+    <Style Selector="Button.danger">
+      <Setter Property="Foreground" Value="{DynamicResource DangerText}" />
+    </Style>
+
+    <!-- Primary: accent fill, white text, feedback on press. -->
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="{DynamicResource Accent}" />
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Height" Value="36" />
+    </Style>
+    <Style Selector="Button.primary /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource Accent}" />
+      <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AccentHover}" />
+    </Style>
+    <Style Selector="Button.primary:pressed /template/ ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource AccentHover}" />
+    </Style>
+
+    <!-- Pressed state: scale 0.97, 100ms, critically damped feel. -->
+    <Style Selector="Button.pressable">
+      <Setter Property="RenderTransform" Value="scale(1)" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.1" Easing="CubicEaseOut" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Button.pressable:pressed">
+      <Setter Property="RenderTransform" Value="scale(0.97)" />
+    </Style>
+
+    <!-- Pills. -->
+    <Style Selector="Border.pill">
+      <Setter Property="Background" Value="{DynamicResource Surface}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource Separator}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="10,5" />
+    </Style>
+    <Style Selector="Border.pill.success">
+      <Setter Property="Background" Value="{DynamicResource SuccessTint}" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="Border.pill.success TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource SuccessText}" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Border.pill.warning">
+      <Setter Property="Background" Value="{DynamicResource WarningTint}" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="Border.pill.warning TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource WarningText}" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Border.pill.inactive TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
+    </Style>
+  </Application.Styles>
+</Application>

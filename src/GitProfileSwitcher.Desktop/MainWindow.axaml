@@ -1,0 +1,291 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="GitProfileSwitcher.Desktop.MainWindow"
+        Title="Git Profile Switcher"
+        Width="1000" Height="660"
+        MinWidth="880" MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI Variable Text, Segoe UI, SF Pro Text, -apple-system, Inter"
+        Background="{DynamicResource Bg}">
+
+  <Window.Styles>
+    <Style Selector="ListBoxItem">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Margin" Value="0,0,0,4" />
+      <Setter Property="MinHeight" Value="0" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBoxItem /template/ ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
+    </Style>
+
+    <Style Selector="Border.card">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Transitions">
+        <Transitions>
+          <BrushTransition Property="Background" Duration="0:0:0.12" Easing="CubicEaseOut" />
+        </Transitions>
+      </Setter>
+    </Style>
+    <Style Selector="Border.card:pointerover">
+      <Setter Property="Background" Value="{DynamicResource SurfaceHover}" />
+    </Style>
+    <Style Selector="Border.card.active">
+      <Setter Property="Background" Value="{DynamicResource AccentTint}" />
+    </Style>
+
+    <Style Selector="Image">
+      <Setter Property="Stretch" Value="Uniform" />
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="Auto,*">
+
+    <!-- Header: identity on the left, live state on the right. -->
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="24,20,24,16">
+      <StackPanel Spacing="2">
+        <TextBlock Text="Git Profile Switcher" FontSize="28" FontWeight="SemiBold" LetterSpacing="-0.4" />
+        <TextBlock Classes="secondary" Text="Perfiles de git en esta máquina" />
+      </StackPanel>
+
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+        <Border x:Name="DesyncPill" Classes="pill warning" IsVisible="False">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Ellipse Width="6" Height="6" Fill="{DynamicResource Warning}" VerticalAlignment="Center" />
+            <TextBlock Text="Desincronizado" />
+          </StackPanel>
+        </Border>
+
+        <Border x:Name="ActiveChip" Classes="pill">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Ellipse x:Name="ActiveDot"
+                     Width="8" Height="8"
+                     Fill="{DynamicResource Success}"
+                     VerticalAlignment="Center"
+                     IsVisible="False" />
+            <TextBlock x:Name="ActiveName" Text="Sin perfil activo" FontSize="13" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </Grid>
+
+    <Grid Grid.Row="1" ColumnDefinitions="300,*">
+
+      <!-- Sidebar -->
+      <Border Grid.Column="0"
+              BorderBrush="{DynamicResource Separator}"
+              BorderThickness="0,1,1,0"
+              Padding="16,16,16,16">
+        <Grid RowDefinitions="Auto,*,Auto">
+
+          <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+            <TextBlock Classes="caption" Text="PERFILES" VerticalAlignment="Center" />
+            <TextBlock x:Name="ProfileCount" Grid.Column="1" Classes="caption" Text="0" />
+          </Grid>
+
+          <ListBox x:Name="ProfileList"
+                   Grid.Row="1"
+                   Margin="0,12,0,12"
+                   Background="Transparent"
+                   BorderThickness="0"
+                   Padding="0"
+                   SelectionChanged="OnProfileSelectionChanged">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Border Classes="card" Classes.active="{Binding IsActive}" Padding="12,10">
+                  <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                    <Ellipse Width="6" Height="6"
+                             Fill="{DynamicResource Success}"
+                             VerticalAlignment="Center"
+                             IsVisible="{Binding IsActive}" />
+                    <StackPanel Grid.Column="1" Spacing="1">
+                      <TextBlock Text="{Binding Name}"
+                                 FontSize="14"
+                                 FontWeight="SemiBold"
+                                 TextTrimming="CharacterEllipsis" />
+                      <TextBlock Text="{Binding Email}"
+                                 FontSize="12"
+                                 Foreground="{DynamicResource TextSecondary}"
+                                 TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <Border Grid.Column="2" Classes="pill success" Padding="8,3"
+                            VerticalAlignment="Center" IsVisible="{Binding IsActive}">
+                      <TextBlock Text="Activo" />
+                    </Border>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+
+          <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="8">
+            <Button Content="Nuevo"
+                    Classes="pressable"
+                    AutomationProperties.Name="Nuevo perfil"
+                    HorizontalAlignment="Stretch"
+                    Click="OnNew" />
+            <Button x:Name="DeleteButton"
+                    Grid.Column="1"
+                    Content="Eliminar"
+                    Classes="danger pressable"
+                    AutomationProperties.Name="Eliminar perfil seleccionado"
+                    HorizontalAlignment="Stretch"
+                    IsEnabled="False"
+                    Click="OnDelete" />
+          </Grid>
+        </Grid>
+      </Border>
+
+      <!-- Detail pane -->
+      <Grid Grid.Column="1" RowDefinitions="*,Auto,Auto">
+
+        <ScrollViewer Grid.Row="0" Padding="24,16,24,8">
+          <Grid>
+            <StackPanel x:Name="DetailForm"
+                        MaxWidth="560"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Spacing="0">
+              <StackPanel.Transitions>
+                <Transitions>
+                  <DoubleTransition Property="Opacity" Duration="0:0:0.18" Easing="CubicEaseOut" />
+                </Transitions>
+              </StackPanel.Transitions>
+              <StackPanel.RenderTransform>
+                <TranslateTransform />
+              </StackPanel.RenderTransform>
+
+
+              <TextBlock Classes="caption" Text="CUENTA" />
+
+              <TextBlock Classes="fieldLabel" Text="Nombre" />
+              <TextBox x:Name="NameBox"
+                       Watermark="Trabajo"
+                       AutomationProperties.Name="Nombre del perfil" />
+              <TextBlock x:Name="NameError" Classes="error" IsVisible="False" />
+
+              <TextBlock Classes="fieldLabel" Text="Cuenta gh (opcional)" />
+              <TextBox x:Name="GhBox"
+                       Watermark="opcional, ej. mi-usuario-gh"
+                       AutomationProperties.Name="Cuenta de GitHub CLI" />
+
+              <TextBlock Classes="caption" Margin="0,24,0,0" Text="GIT" />
+
+              <TextBlock Classes="fieldLabel" Text="user.name" />
+              <TextBox x:Name="GitNameBox"
+                       Watermark="Tu nombre"
+                       AutomationProperties.Name="git user.name" />
+              <TextBlock x:Name="GitNameError" Classes="error" IsVisible="False" />
+
+              <TextBlock Classes="fieldLabel" Text="user.email" />
+              <TextBox x:Name="EmailBox"
+                       Watermark="tu@ejemplo.com"
+                       AutomationProperties.Name="git user.email" />
+              <TextBlock x:Name="EmailError" Classes="error" IsVisible="False" />
+
+              <TextBlock Classes="caption" Margin="0,24,0,0" Text="SSH" />
+
+              <TextBlock Classes="fieldLabel" Text="Ruta de la llave" />
+              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <TextBox x:Name="SshBox"
+                         Watermark="~/.ssh/id_ed25519"
+                         AutomationProperties.Name="Ruta de la llave SSH" />
+                <Button Grid.Column="1"
+                        Content="Examinar…"
+                        Classes="pressable"
+                        AutomationProperties.Name="Examinar llave SSH"
+                        Click="OnBrowseSsh" />
+              </Grid>
+            </StackPanel>
+
+            <!-- Empty state -->
+            <StackPanel x:Name="EmptyPanel"
+                        IsVisible="False"
+                        MaxWidth="320"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="8">
+              <Border Width="64" Height="64"
+                      CornerRadius="16"
+                      Background="{DynamicResource Surface}"
+                      HorizontalAlignment="Center">
+                <TextBlock Text="+"
+                           FontSize="30"
+                           FontWeight="Light"
+                           Foreground="{DynamicResource Accent}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+              </Border>
+              <TextBlock Text="Aún no hay perfiles"
+                         FontSize="20"
+                         FontWeight="SemiBold"
+                         HorizontalAlignment="Center"
+                         Margin="0,8,0,0" />
+              <TextBlock Classes="secondary"
+                         Text="Crea un perfil para cambiar de cuenta git con un clic"
+                         TextAlignment="Center"
+                         TextWrapping="Wrap" />
+              <Button Content="Crear perfil"
+                      Classes="primary pressable"
+                      AutomationProperties.Name="Crear perfil"
+                      HorizontalAlignment="Center"
+                      Margin="0,8,0,0"
+                      Click="OnNew" />
+            </StackPanel>
+          </Grid>
+        </ScrollViewer>
+
+        <!-- Sticky action bar -->
+        <Border x:Name="ActionBar"
+                Grid.Row="1"
+                BorderBrush="{DynamicResource Separator}"
+                BorderThickness="0,1,0,0"
+                Padding="24,12">
+          <Grid ColumnDefinitions="*,Auto,8,Auto">
+            <Button Grid.Column="1"
+                    x:Name="SaveButton"
+                    Content="Guardar"
+                    Classes="pressable"
+                    AutomationProperties.Name="Guardar perfil"
+                    Click="OnSave" />
+            <Button Grid.Column="3"
+                    x:Name="ApplyButton"
+                    Content="Aplicar perfil"
+                    Classes="primary pressable"
+                    AutomationProperties.Name="Aplicar perfil"
+                    IsEnabled="False"
+                    Click="OnApply" />
+          </Grid>
+        </Border>
+
+        <!-- Status -->
+        <Border Grid.Row="2"
+                BorderBrush="{DynamicResource Separator}"
+                BorderThickness="0,1,0,0"
+                Padding="24,10"
+                MaxHeight="140">
+          <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="StatusPanel" Spacing="6">
+              <TextBlock x:Name="StatusEmpty" Classes="secondary" Text="Sin cambios todavía" />
+            </StackPanel>
+          </ScrollViewer>
+        </Border>
+      </Grid>
+    </Grid>
+  </Grid>
+</Window>

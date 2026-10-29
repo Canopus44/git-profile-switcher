@@ -1,0 +1,88 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Test
+        run: dotnet test -c Release
+
+  build:
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: macos-latest
+            rid: osx-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Publish
+        run: >
+          dotnet publish src/GitProfileSwitcher.Desktop -c Release -r ${{ matrix.rid }}
+          --self-contained true -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true -o publish/${{ matrix.rid }}
+
+      - name: Install vpk
+        if: matrix.os == 'windows-latest'
+        run: dotnet tool install --global vpk
+
+      - name: Pack installer
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:USERPROFILE\.dotnet\tools;$env:PATH"
+          vpk pack --packId GitProfileSwitcher --packVersion 1.1.0 --packDir publish/win-x64 `
+            --mainExe GitProfileSwitcher.exe --packTitle "Git Profile Switcher" `
+            --packAuthors "Canopus44" --runtime win-x64 --icon assets/icon.ico -o Releases
+          $setup = Get-ChildItem Releases -Filter '*Setup.exe' | Select-Object -First 1
+          if (-not $setup) { throw "vpk no genero ningun *Setup.exe" }
+          Move-Item $setup.FullName Releases/Setup.exe
+
+      - name: Upload installer
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-windows
+          path: Releases/Setup.exe
+
+      - name: Archive (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: tar -czf GitProfileSwitcher-linux-x64.tar.gz -C publish/linux-x64 .
+
+      - name: Upload archive (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-linux-x64
+          path: GitProfileSwitcher-linux-x64.tar.gz
+
+      - name: Archive (macOS)
+        if: matrix.os == 'macos-latest'
+        run: ditto -c -k --keepParent publish/osx-arm64 GitProfileSwitcher-osx-arm64.zip
+
+      - name: Upload archive (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-osx-arm64
+          path: GitProfileSwitcher-osx-arm64.zip
