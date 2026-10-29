@@ -10,6 +10,8 @@
         <ResourceDictionary x:Key="Dark">
           <SolidColorBrush x:Key="Bg" Color="#0B0B0F" />
           <SolidColorBrush x:Key="BgTranslucent" Color="#D90B0B0F" />
+          <SolidColorBrush x:Key="SidebarSurface" Color="#121218" />
+          <SolidColorBrush x:Key="CardSurface" Color="#14141A" />
           <SolidColorBrush x:Key="Surface" Color="#0FFFFFFF" />
           <SolidColorBrush x:Key="SurfaceHover" Color="#1FFFFFFF" />
           <SolidColorBrush x:Key="FieldBg" Color="#0AFFFFFF" />
@@ -20,6 +22,9 @@
           <SolidColorBrush x:Key="Accent" Color="#0A84FF" />
           <SolidColorBrush x:Key="AccentHover" Color="#3395FF" />
           <SolidColorBrush x:Key="AccentTint" Color="#260A84FF" />
+          <SolidColorBrush x:Key="ActiveRowTint" Color="#1A0A84FF" />
+          <SolidColorBrush x:Key="AvatarTint" Color="#2E0A84FF" />
+          <SolidColorBrush x:Key="FocusRing" Color="#990A84FF" />
           <SolidColorBrush x:Key="Success" Color="#30D158" />
           <SolidColorBrush x:Key="SuccessText" Color="#30D158" />
           <SolidColorBrush x:Key="SuccessTint" Color="#2930D158" />
@@ -33,6 +38,8 @@
         <ResourceDictionary x:Key="Light">
           <SolidColorBrush x:Key="Bg" Color="#F5F5F7" />
           <SolidColorBrush x:Key="BgTranslucent" Color="#D9F5F5F7" />
+          <SolidColorBrush x:Key="SidebarSurface" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="CardSurface" Color="#FFFFFF" />
           <SolidColorBrush x:Key="Surface" Color="#FFFFFF" />
           <SolidColorBrush x:Key="SurfaceHover" Color="#08000000" />
           <SolidColorBrush x:Key="FieldBg" Color="#FFFFFF" />
@@ -43,6 +50,9 @@
           <SolidColorBrush x:Key="Accent" Color="#0A84FF" />
           <SolidColorBrush x:Key="AccentHover" Color="#0077ED" />
           <SolidColorBrush x:Key="AccentTint" Color="#1A0A84FF" />
+          <SolidColorBrush x:Key="ActiveRowTint" Color="#1A0A84FF" />
+          <SolidColorBrush x:Key="AvatarTint" Color="#2E0A84FF" />
+          <SolidColorBrush x:Key="FocusRing" Color="#990A84FF" />
           <SolidColorBrush x:Key="Success" Color="#30D158" />
           <SolidColorBrush x:Key="SuccessText" Color="#127A34" />
           <SolidColorBrush x:Key="SuccessTint" Color="#2630D158" />
@@ -65,6 +75,11 @@
       <Setter Property="FontSize" Value="14" />
       <Setter Property="Foreground" Value="{DynamicResource Text}" />
     </Style>
+    <Style Selector="TextBlock.title">
+      <Setter Property="FontSize" Value="26" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="LetterSpacing" Value="-0.4" />
+    </Style>
     <Style Selector="TextBlock.caption">
       <Setter Property="FontSize" Value="11" />
       <Setter Property="FontWeight" Value="SemiBold" />
@@ -75,15 +90,17 @@
       <Setter Property="FontSize" Value="12" />
       <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
     </Style>
-    <Style Selector="TextBlock.fieldLabel">
-      <Setter Property="FontSize" Value="12" />
+    <Style Selector="TextBlock.subtitle">
+      <Setter Property="FontSize" Value="13" />
       <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
-      <Setter Property="Margin" Value="0,12,0,6" />
+    </Style>
+    <Style Selector="TextBlock.fieldLabel">
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="Foreground" Value="{DynamicResource Text}" />
     </Style>
     <Style Selector="TextBlock.error">
-      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontSize" Value="11" />
       <Setter Property="Foreground" Value="{DynamicResource DangerText}" />
-      <Setter Property="Margin" Value="0,4,0,0" />
       <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
@@ -104,8 +121,8 @@
       <Setter Property="BorderBrush" Value="{DynamicResource TextSecondary}" />
     </Style>
     <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
-      <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
-      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="{DynamicResource FocusRing}" />
+      <Setter Property="BorderThickness" Value="2" />
     </Style>
 
     <Style Selector="ComboBox">
@@ -141,6 +158,8 @@
     <Style Selector="Button /template/ ContentPresenter">
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="BorderBrush" Value="Transparent" />
     </Style>
     <Style Selector="Button:pointerover /template/ ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource SurfaceHover}" />
@@ -169,7 +188,7 @@
       <Setter Property="Background" Value="{DynamicResource Accent}" />
       <Setter Property="Foreground" Value="White" />
       <Setter Property="FontWeight" Value="SemiBold" />
-      <Setter Property="Height" Value="36" />
+      <Setter Property="Height" Value="34" />
     </Style>
     <Style Selector="Button.primary /template/ ContentPresenter">
       <Setter Property="Background" Value="{DynamicResource Accent}" />
@@ -195,13 +214,19 @@
       <Setter Property="RenderTransform" Value="scale(0.97)" />
     </Style>
 
+    <!-- Visible focus ring: 2px accent at 60%. -->
+    <Style Selector="Button:focus-visible /template/ ContentPresenter">
+      <Setter Property="BorderBrush" Value="{DynamicResource FocusRing}" />
+      <Setter Property="BorderThickness" Value="2" />
+    </Style>
+
     <!-- Pills. -->
     <Style Selector="Border.pill">
       <Setter Property="Background" Value="{DynamicResource Surface}" />
       <Setter Property="BorderBrush" Value="{DynamicResource Separator}" />
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="8" />
-      <Setter Property="Padding" Value="10,5" />
+      <Setter Property="Padding" Value="8,3" />
     </Style>
     <Style Selector="Border.pill.success">
       <Setter Property="Background" Value="{DynamicResource SuccessTint}" />
@@ -220,9 +245,6 @@
       <Setter Property="Foreground" Value="{DynamicResource WarningText}" />
       <Setter Property="FontSize" Value="12" />
       <Setter Property="FontWeight" Value="SemiBold" />
-    </Style>
-    <Style Selector="Border.pill.inactive TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource TextSecondary}" />
     </Style>
   </Application.Styles>
 </Application>

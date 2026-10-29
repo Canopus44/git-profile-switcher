@@ -51,7 +51,7 @@ jobs:
         shell: pwsh
         run: |
           $env:PATH = "$env:USERPROFILE\.dotnet\tools;$env:PATH"
-          vpk pack --packId GitProfileSwitcher --packVersion 1.2.0 --packDir publish/win-x64 `
+          vpk pack --packId GitProfileSwitcher --packVersion 1.3.0 --packDir publish/win-x64 `
             --mainExe GitProfileSwitcher.exe --packTitle "Git Profile Switcher" `
             --packAuthors "Canopus44" --runtime win-x64 --icon assets/icon.ico -o Releases
           $setup = Get-ChildItem Releases -Filter '*Setup.exe' | Select-Object -First 1

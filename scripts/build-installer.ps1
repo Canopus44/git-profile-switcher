@@ -7,7 +7,7 @@ Set-Location $root
 $rid = 'win-x64'
 $publishDir = "publish/$rid"
 $releasesDir = 'Releases'
-$version = '1.2.0'
+$version = '1.3.0'
 
 Write-Host "==> Limpiando $publishDir y $releasesDir"
 if (Test-Path $publishDir) { Remove-Item $publishDir -Recurse -Force }
